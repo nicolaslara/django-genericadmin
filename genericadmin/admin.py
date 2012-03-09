@@ -9,7 +9,7 @@ class Lookup(models.Model):
   url without having to override the default AdminSite.
   """
   class Meta:
-    abstract = True
+    managed = False
 
 class GenericAdminModelAdmin(admin.ModelAdmin):
   model = Lookup
