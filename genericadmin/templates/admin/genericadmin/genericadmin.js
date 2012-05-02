@@ -66,7 +66,7 @@ function GenericObject(i, objectIdEl) {
     this.lookupLink.attr('id', 'lookup_'+this.objectIdEl.id);
     
     // The lookup icon which will open a popup when clicked, but only if the associated content_type select element has a valid value
-    this.lookupIcon = $('<img src="' + ADMIN_MEDIA_URL + 'img/admin/selector-search.gif" style="cursor: pointer; margin-left: 5px" width="16" height="16" alt="Lookup">');
+    this.lookupIcon = $('<img src="' + ADMIN_MEDIA_URL + 'admin/img/selector-search.gif" style="cursor: pointer; margin-left: 5px" width="16" height="16" alt="Lookup">');
     this.lookupLink.append(this.lookupIcon);
     
     // The inline text element to store the display of the actual object
