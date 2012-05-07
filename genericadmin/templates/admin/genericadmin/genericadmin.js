@@ -10,7 +10,7 @@ if (typeof(JQUERY_LIB) == 'undefined')
 */
 if (typeof(GENERIC_ADMIN_DELAY_INIT) == 'undefined')
   var GENERIC_ADMIN_DELAY_INIT = false;
-var ADMIN_MEDIA_URL = "{% admin_media_prefix %}";
+var ADMIN_MEDIA_URL = "{{ STATIC_URL }}admin/";
 var ADMIN_OBJ_LOOKUP_URL = "{% url admin:admin_genericadmin_obj_lookup %}";
 
 Array.prototype.unique = function () {
@@ -49,12 +49,12 @@ function GenericObject(i, objectIdEl) {
     $ = django.jQuery;
     this.objectIdEl = objectIdEl;
     this.contentTypeEl;
-    
+
     this.contentTypeId; // Store the id of the content_type we want to look up
     this.prevContentTypeId;
     this.objectId; // Store the id of the object (object_id) we want to look up
     this.prevObjectId;
-    
+
     // The lookup link
     this.lookupLink = $('<a class="related-lookup"></a>');
     this.lookupLink.click(function() {
@@ -64,30 +64,30 @@ function GenericObject(i, objectIdEl) {
         return false;
     });
     this.lookupLink.attr('id', 'lookup_'+this.objectIdEl.id);
-    
+
     // The lookup icon which will open a popup when clicked, but only if the associated content_type select element has a valid value
-    this.lookupIcon = $('<img src="' + ADMIN_MEDIA_URL + 'admin/img/selector-search.gif" style="cursor: pointer; margin-left: 5px" width="16" height="16" alt="Lookup">');
+    this.lookupIcon = $('<img src="' + ADMIN_MEDIA_URL + 'img/selector-search.gif" style="cursor: pointer; margin-left: 5px" width="16" height="16" alt="Lookup">');
     this.lookupLink.append(this.lookupIcon);
-    
+
     // The inline text element to store the display of the actual object
     this.lookupText = $('<strong style="width: 100px; margin-left: 5px"></strong>');
-    
+
     var self = this;
     this.__init__ = function() {
         // sets the associated content_type element
         vars = this.objectIdEl.id.split('-');   // should return 3 items: ["id_ingredientlist_set", "2", "content_type"]
-        
+
         if (vars.length==1) { //not an inline edit
             id = '#id_content_type';
         } else {
             id = '#' + vars[0] + '-' + vars[1] + '-content_type';
         }
         this.contentTypeEl = $(id)[0];
-        
+
         if (this.contentTypeEl.value) {
             this.contentTypeId = this.contentTypeEl.value;  // If the content_type has an initial value, now is a good time to set it
             this.lookupLink.attr('href', '../../../' + MODEL_URL_ARRAY[this.contentTypeEl.value] + '/');
-            
+
             if (this.objectIdEl.value) {
                 this.objectId = this.objectIdEl.value;
                 this.updateObjectIdEl();
@@ -95,7 +95,7 @@ function GenericObject(i, objectIdEl) {
         } else {
             this.lookupLink.hide();
         }
-        
+
         // Create optgroups
         opt_keys = [];
         opt_dict = {};
@@ -114,25 +114,25 @@ function GenericObject(i, objectIdEl) {
                 $(this).remove();
             }
         });
-        
+
         opt_keys = opt_keys.unique().sort();
         for (i=0; i< opt_keys.length; i++) {
             key = opt_keys[i];
             $opt_group = $('<optgroup label="' + key + '"></optgroup>').css({
                 "font-style": "normal",
-                "font-weight": "bold", 
+                "font-weight": "bold",
                 "color": "#999",
                 "padding-left": "2px"
             });
             $(this.contentTypeEl).append($opt_group);
-            
+
             for (j in opt_dict[key]) {
                 el = opt_dict[key][j];
                 $(el).css({'color': opt_color, 'padding': opt_padding});
                 $opt_group.append(el);
             }
         }
-        
+
         $(this.contentTypeEl).change(function() {
             self.contentTypeId = this.value;    // Set our objectId when the content_type is changed
             if (self.contentTypeEl.value) {
@@ -142,22 +142,22 @@ function GenericObject(i, objectIdEl) {
                 self.lookupLink.hide();
             }
         });
-        
+
         // Add the lookup icon
         $(this.objectIdEl).after(this.lookupLink).after(this.lookupText).css('width', '10px');
-        
+
         // Bind to the onfocus of the window and the onblur of the object_id input.
         $(window).focus(function(){self.updateObjectIdEl();});
         $(this.objectIdEl).blur(self.updateObjectIdEl);
     };
-    
+
     this.updateObjectIdEl = function() {
         // Call the server for an update, but only if everything is good to go
         // First check that something has changed
         if (this.contentTypeId != this.prevContentTypeId || this.objectIdEl.value != this.prevObjectId) {
             this.prevObjectId = this.objectIdEl.value;
             this.prevContentTypeId = this.contentTypeId;
-            
+
             // A change has been made, so let's double check that the values are sane (i.e not empty)
             if (this.objectIdEl.value && this.contentTypeId) {
                 self.lookupText.text('loading...');
@@ -170,10 +170,10 @@ function GenericObject(i, objectIdEl) {
             }
         }
     };
-    
+
     // Run initialization and return
     this.__init__();
-    
+
     return {
         objectIdEl:         this.objectIdEl,
         contentTypeEl:      this.contentTypeEl,
